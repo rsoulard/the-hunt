@@ -8,6 +8,7 @@ target_sources(${PROJECT_NAME}
     PRIVATE
     source/main.C
     source/engine/application.c
+    source/engine/softwarerenderer.c
     source/datastructures/dictionary.c
     source/algorithms/hash.c
 )

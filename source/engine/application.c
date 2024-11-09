@@ -105,3 +105,13 @@ int Application_Run(application_t this)
 
 	return message.wParam;
 }
+
+void Application_RegisterService(application_t this, const char* serviceKey, const void* service)
+{
+	Dictionary_Insert(this->serviceCollection, serviceKey, service);
+}
+
+void* Application_ResolveService(application_t this, const char* serviceKey)
+{
+	Dictionary_Get(this->serviceCollection, serviceKey);
+}
