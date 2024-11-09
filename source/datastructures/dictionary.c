@@ -42,6 +42,14 @@ dictionary_t Dictionary_New(unsigned long (*keyHashFunction)(const void*),  size
     return this;
 }
 
+void Dictionary_Destroy(dictionary_t this)
+{
+    free(this->keyHashBuffer);
+    free(this->valueBuffer);
+
+    free(this);
+}
+
 
 static void EnsureCapacity(dictionary_t this, size_t desiredCapacity)
 {
