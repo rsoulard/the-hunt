@@ -3,6 +3,8 @@
 #endif
 
 #include<application.h>
+#include<dictionary.h>
+#include<hash.h>
 
 int main()
 {

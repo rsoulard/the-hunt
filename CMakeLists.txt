@@ -8,6 +8,8 @@ target_sources(${PROJECT_NAME}
     PRIVATE
     source/main.C
     source/engine/application.c
+    source/datastructures/dictionary.c
+    source/algorithms/hash.c
 )
 
 target_include_directories(${PROJECT_NAME}

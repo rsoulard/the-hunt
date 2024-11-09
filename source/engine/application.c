@@ -4,10 +4,12 @@
 #include <Windows.h>
 
 #include "application.h"
+#include "dictionary.h"
+#include "hash.h"
 
 struct Application
 {
-	bool isStopping;
+	dictionary_t serviceCollection;
 };
 
 application_t Application_New()
@@ -16,7 +18,7 @@ application_t Application_New()
 
 	assert(this);
 
-	this->isStopping;
+	this->serviceCollection = Dictionary_New(StringHash, sizeof(void*));
 
 	return this;
 }
