@@ -1,4 +1,5 @@
 #include <application.h>
+#include <applicationlifecycle.h>
 #include <assert.h>
 #include <servicecollection.h>
 #include <serviceprovider.h>
@@ -11,6 +12,16 @@ struct ApplicationBuilder
     serviceCollection_t serviceCollection;
 };
 
+void* ApplicationLifeCycleFactory(serviceProvider_t serviceProvider)
+{
+	return ApplicationLifeCycle_New();
+}
+
+void ApplicationLifeCycleCleaner(void* instance)
+{
+	ApplicationLifeCycle_Destroy(instance);
+}
+
 applicationBuilder_t ApplicationBuilder_New()
 {
     applicationBuilder_t this = malloc(sizeof *this);
@@ -18,6 +29,8 @@ applicationBuilder_t ApplicationBuilder_New()
     assert(this);
 
     this->serviceCollection = ServiceCollection_New();
+
+	ServiceCollection_AddSingleton(this->serviceCollection, "applicationLifeCycle", ApplicationLifeCycleFactory, ApplicationLifeCycleCleaner);
 
     return this;
 }

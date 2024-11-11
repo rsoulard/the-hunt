@@ -1,3 +1,4 @@
+#include <applicationlifecycle.h>
 #include <assert.h>
 #include <window.h>
 #include <stdbool.h>
@@ -36,9 +37,10 @@ int Application_Run(application_t this)
 {
 	ServiceProvider_Start(this->serviceProvider);
 
+	applicationLifeCycle_t applicationLifeCycle = ServiceProvider_ResolveService(this->serviceProvider, "applicationLifeCycle");
 	window_t window = ServiceProvider_ResolveService(this->serviceProvider, "window");
 
-	while (!quit)
+	while (ApplicationLifeCycle_IsRunning(applicationLifeCycle))
 	{
 		Window_Process(window);
 	}

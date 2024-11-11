@@ -7,15 +7,17 @@
 struct Window
 {
     HWND systemWindow;
+	applicationLifeCycle_t applicationLifeCycle;
 };
 
-window_t Window_New()
+window_t Window_New(applicationLifeCycle_t applicationLifeCycle)
 {
     window_t this = malloc(sizeof *this);
 
     assert(this);
 
     this->systemWindow = NULL;
+	this->applicationLifeCycle = applicationLifeCycle;
 
     return this;
 }
@@ -86,6 +88,11 @@ void Window_Process(window_t this)
     MSG message = { 0 };
     while (PeekMessage(&message, this->systemWindow, 0, 0, PM_REMOVE))
     {
+		if (message.message == WM_QUIT || message.message == WM_DESTROY)
+		{
+			ApplicationLifeCycle_Stop(this->applicationLifeCycle, message.wParam);
+		}
+
         DispatchMessage(&message);
     }
 

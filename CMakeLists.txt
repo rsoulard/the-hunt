@@ -11,6 +11,7 @@ target_sources(${PROJECT_NAME}
     source/datastructures/dictionary.c
     source/engine/application.c
     source/engine/applicationbuilder.c
+    source/engine/applicationlifecycle.c
     source/engine/framebuffer.c
     source/engine/servicecollection.C
     source/engine/serviceprovider.c
