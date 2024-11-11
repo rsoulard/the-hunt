@@ -1,3 +1,5 @@
+#pragma once
+
 typedef struct SoftwareRenderer* softwareRenderer_t;
 
 softwareRenderer_t SoftwareRenderer_New(int temp);

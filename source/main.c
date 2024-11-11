@@ -2,21 +2,18 @@
 #	pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
-#include <application.h>
-#include <softwarerenderer.h>
+#include <applicationBuilder.h>
+#include <framebuffer.h>
 
 int main()
 {
-	application_t application = Application_New();
+	applicationBuilder_t applicationBuilder = ApplicationBuilder_New();
 
-	softwareRenderer_t softwareRenderer = SoftwareRenderer_New(1);
-	Application_RegisterService(application, "softwareRenderer", &softwareRenderer);
-
-	softwareRenderer_t test = *(softwareRenderer_t*)Application_ResolveService(application, "softwareRenderer");
-	SoftwareRenderer_Test(test, 20);
+	application_t application = ApplicationBuilder_Build(applicationBuilder);
+	ApplicationBuilder_Destroy(applicationBuilder);
 
 	int returnValue = Application_Run(application);
-	SoftwareRenderer_Destroy(softwareRenderer);
+
 	Application_Destroy(application);
 	return returnValue;
 }

@@ -6,6 +6,12 @@
         "*.js.liquid": "liquid-javascript",
         "*.css.liquid": "liquid-css",
         "*.scss.liquid": "liquid-scss",
-        "application.h": "c"
+        "application.h": "c",
+        "dictionary.h": "c",
+        "hash.h": "c",
+        "windows.h": "c",
+        "applicationbuilder.h": "c",
+        "assert.h": "c",
+        "serviceprovider.h": "c"
     }
 }

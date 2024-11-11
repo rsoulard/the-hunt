@@ -1,30 +1,31 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <serviceprovider.h>
 #include <Windows.h>
 
 #include "application.h"
-#include "dictionary.h"
-#include "hash.h"
 
 struct Application
 {
-	dictionary_t serviceCollection;
+	serviceProvider_t serviceProvider;
 };
 
-application_t Application_New()
+application_t Application_New(serviceProvider_t serviceProvider)
 {
 	application_t this = malloc(sizeof  *this);
 
 	assert(this);
 
-	this->serviceCollection = Dictionary_New(StringHash, sizeof(void*));
+	this->serviceProvider = serviceProvider;
 
 	return this;
 }
 
 void Application_Destroy(application_t this)
 {
+	ServiceProvider_Destroy(this->serviceProvider);
+
 	free(this);
 }
 
@@ -104,14 +105,4 @@ int Application_Run(application_t this)
 	}
 
 	return message.wParam;
-}
-
-void Application_RegisterService(application_t this, const char* serviceKey, const void* service)
-{
-	Dictionary_Insert(this->serviceCollection, serviceKey, service);
-}
-
-void* Application_ResolveService(application_t this, const char* serviceKey)
-{
-	Dictionary_Get(this->serviceCollection, serviceKey);
 }

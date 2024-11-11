@@ -1,3 +1,5 @@
+#pragma once
+#include <stdint.h>
 
 typedef struct Dictionary* dictionary_t;
 
