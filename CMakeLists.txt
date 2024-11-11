@@ -15,6 +15,7 @@ target_sources(${PROJECT_NAME}
     source/engine/servicecollection.C
     source/engine/serviceprovider.c
     source/engine/softwarerenderer.c
+    source/engine/window.c
 )
 
 target_include_directories(${PROJECT_NAME}

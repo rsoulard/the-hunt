@@ -7,6 +7,7 @@
 #include <servicecollection.h>
 #include <serviceprovider.h>
 #include <framebuffer.h>
+#include <window.h>
 
 void* FrameBufferFactory(serviceProvider_t serviceProvider)
 {
@@ -18,13 +19,24 @@ void FrameBufferCleaner(void* instance)
 	FrameBuffer_Destroy(instance);
 }
 
+void WindowFactory(serviceProvider_t serviceProvider)
+{
+	return Window_New();
+}
+
+void WindowCleaner(void* instance)
+{
+	Window_Destroy(instance);
+}
+
 int main()
 {
 	applicationBuilder_t applicationBuilder = ApplicationBuilder_New();
 
 	serviceCollection_t serviceCollection = ApplicationBuilder_GetServiceCollection(applicationBuilder);
 
-	ServiceCollection_AddService(serviceCollection, "frameBuffer", FrameBufferFactory, FrameBufferCleaner);
+	ServiceCollection_AddLifeCycle(serviceCollection, "window", FrameBufferFactory, FrameBufferCleaner, Window_OnStart, Window_OnEnd);
+	ServiceCollection_AddSingleton(serviceCollection, "frameBuffer", FrameBufferFactory, FrameBufferCleaner);
 
 	application_t application = ApplicationBuilder_Build(applicationBuilder);
 	ApplicationBuilder_Destroy(applicationBuilder);

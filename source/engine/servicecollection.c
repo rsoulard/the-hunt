@@ -29,14 +29,28 @@ void ServiceCollection_Destroy(serviceCollection_t this)
     free(this);
 }
 
-void ServiceCollection_AddService(serviceCollection_t this, const char* key, void* (*factory)(serviceProvider_t), void (*cleaner)(void*))
+void ServiceCollection_AddSingleton(serviceCollection_t this, const char* key, void* (*factory)(serviceProvider_t), void (*cleaner)(void*))
 {
     struct ServiceEntry entry = { 0 };
+	entry.type = SINGLETON;
     entry.factory = factory;
     entry.cleaner = cleaner;
-    entry.instance = NULL;
+	entry.instance = NULL;
 
     Dictionary_Insert(this->serviceDictionary, key, &entry); 
+}
+
+void ServiceCollection_AddLifeCycle(serviceCollection_t this, const char* key, void* (*factory)(serviceProvider_t), void (*cleaner)(void*), void (*onStart), void (*onEnd))
+{
+	struct ServiceEntry entry = { 0 };
+	entry.type = LIFECYCLE;
+	entry.factory = factory;
+	entry.cleaner = cleaner;
+	entry.lifeCycle.onStart = onStart;
+	entry.lifeCycle.onEnd = onEnd;
+	entry.instance = NULL;
+
+	Dictionary_Insert(this->serviceDictionary, key, &entry);
 }
 
 serviceProvider_t ServiceCollection_CreateProvider(serviceCollection_t this)
