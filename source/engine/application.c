@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <framebuffer.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <serviceprovider.h>
@@ -58,6 +59,8 @@ static LRESULT CALLBACK WindowProcess(HWND window, UINT message, WPARAM wParam, 
 
 int Application_Run(application_t this)
 {
+	frameBuffer_t framebuffer = ServiceProvider_ResolveService(this->serviceProvider, "frameBuffer");
+
 	HBRUSH backgroundBrush = CreateSolidBrush(RGB(0, 0, 0));
 	WNDCLASSEX windowClass;
 	HINSTANCE instance = GetModuleHandle(NULL);

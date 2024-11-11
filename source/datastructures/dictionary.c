@@ -28,7 +28,7 @@ dictionary_t Dictionary_New(unsigned long (*keyHashFunction)(const void*),  size
     this->keyHashFunction = keyHashFunction;
     this->valueSize = valueSize;
     this->capacity = DEFAULT_CAPACITY;
-    this->count = RESIZE_FACTOR;
+    this->count = 0;
 
     void* keyHashBuffer = malloc(sizeof(unsigned long) * this->capacity);
     void* valueBuffer = malloc(this->valueSize * this->capacity);
@@ -96,7 +96,7 @@ int GetIndexOfKeyHash(dictionary_t this, unsigned long hash)
     return -1;
 }
 
-void* Dictionary_Get(dictionary_t this, const void* key)
+void* Dictionary_GetByKey(dictionary_t this, const void* key)
 {
     unsigned long hash = this->keyHashFunction(key);
     int keyIndex = GetIndexOfKeyHash(this, hash);
@@ -107,6 +107,21 @@ void* Dictionary_Get(dictionary_t this, const void* key)
     }
 
     return NULL;
+}
+
+void* Dictionary_GetByIndex(dictionary_t this, int index)
+{
+	if (index >= 0 && index < this->count)
+	{
+		return GetPointerToValueAtIndex(this, index);
+	}
+
+	return NULL;
+}
+
+inline Dictionary_GetCount(dictionary_t this)
+{
+	return this->count;
 }
 
 void Dictionary_Insert(dictionary_t this, const void* key, const void* value)

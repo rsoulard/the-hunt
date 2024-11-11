@@ -29,7 +29,7 @@ void ServiceCollection_Destroy(serviceCollection_t this)
     free(this);
 }
 
-void ServiceCollection_AddService(serviceCollection_t this, const char* key, void* (*factory)(serviceProvider_t), void (*cleaner))
+void ServiceCollection_AddService(serviceCollection_t this, const char* key, void* (*factory)(serviceProvider_t), void (*cleaner)(void*))
 {
     struct ServiceEntry entry = { 0 };
     entry.factory = factory;
