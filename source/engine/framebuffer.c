@@ -1,6 +1,4 @@
 #include <assert.h>
-#include <stdint.h>
-#include <windows.h>
 
 #include "framebuffer.h"
 
@@ -42,7 +40,43 @@ void FrameBuffer_Resize(frameBuffer_t this, int width, int height)
     }
 
     this->bitmap = CreateDIBSection(NULL, &this->bitmapInfo, DIB_RGB_COLORS, (void**)&this->pixels, 0, 0);
+
+	assert(this->bitmap);
+
     SelectObject(this->deviceContext, this->bitmap);
+}
+
+void FrameBuffer_Paint(frameBuffer_t this, HDC destinationDeviceContext, PAINTSTRUCT paintStruct)
+{
+	StretchBlt(
+		destinationDeviceContext,
+		paintStruct.rcPaint.left,
+		paintStruct.rcPaint.top,
+		paintStruct.rcPaint.right - paintStruct.rcPaint.left,
+		paintStruct.rcPaint.bottom - paintStruct.rcPaint.top,
+		this->deviceContext,
+		paintStruct.rcPaint.left,
+		paintStruct.rcPaint.top,
+		this->bitmapInfo.bmiHeader.biWidth,
+		this->bitmapInfo.bmiHeader.biHeight,
+		SRCCOPY
+	);
+	BitBlt(
+		this->deviceContext,
+		paintStruct.rcPaint.left,
+		paintStruct.rcPaint.top,
+		this->bitmapInfo.bmiHeader.biWidth,
+		this->bitmapInfo.bmiHeader.biHeight,
+		NULL,
+		0,
+		0,
+		BLACKNESS
+	);
+}
+
+inline void FrameBuffer_SetPixel(frameBuffer_t this, uint32_t value)
+{
+	this->pixels[1000] = value;
 }
 
 void FrameBuffer_Destroy(frameBuffer_t this)
@@ -50,11 +84,6 @@ void FrameBuffer_Destroy(frameBuffer_t this)
     if (this->bitmap)
     {
         DeleteObject(this->bitmap);
-    }
-
-    if (this->pixels)
-    {
-        free(this->pixels);
     }
 
     free(this);

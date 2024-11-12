@@ -22,7 +22,8 @@ void FrameBufferCleaner(void* instance)
 void WindowFactory(serviceProvider_t serviceProvider)
 {
 	applicationLifeCycle_t applicationLifeCycle = ServiceProvider_ResolveService(serviceProvider, "applicationLifeCycle");
-	return Window_New(applicationLifeCycle);
+	frameBuffer_t frameBuffer = ServiceProvider_ResolveService(serviceProvider, "frameBuffer");
+	return Window_New(applicationLifeCycle, frameBuffer);
 }
 
 void WindowCleaner(void* instance)
@@ -36,8 +37,8 @@ int main()
 
 	serviceCollection_t serviceCollection = ApplicationBuilder_GetServiceCollection(applicationBuilder);
 
-	ServiceCollection_AddLifeCycle(serviceCollection, "window", WindowFactory, WindowCleaner, Window_OnStart, Window_OnEnd);
 	ServiceCollection_AddSingleton(serviceCollection, "frameBuffer", FrameBufferFactory, FrameBufferCleaner);
+	ServiceCollection_AddLifeCycle(serviceCollection, "window", WindowFactory, WindowCleaner, Window_OnStart, Window_OnEnd);
 
 	application_t application = ApplicationBuilder_Build(applicationBuilder);
 	ApplicationBuilder_Destroy(applicationBuilder);

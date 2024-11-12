@@ -39,10 +39,12 @@ int Application_Run(application_t this)
 
 	applicationLifeCycle_t applicationLifeCycle = ServiceProvider_ResolveService(this->serviceProvider, "applicationLifeCycle");
 	window_t window = ServiceProvider_ResolveService(this->serviceProvider, "window");
+	frameBuffer_t frameBuffer = ServiceProvider_ResolveService(this->serviceProvider, "frameBuffer");
 
 	while (ApplicationLifeCycle_IsRunning(applicationLifeCycle))
 	{
 		Window_Process(window);
+		FrameBuffer_SetPixel(frameBuffer, 0xFFFFFF);
 	}
 
 	ServiceProvider_End(this->serviceProvider);

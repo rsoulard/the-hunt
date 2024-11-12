@@ -8,9 +8,10 @@ struct Window
 {
     HWND systemWindow;
 	applicationLifeCycle_t applicationLifeCycle;
+	frameBuffer_t frameBuffer;
 };
 
-window_t Window_New(applicationLifeCycle_t applicationLifeCycle)
+window_t Window_New(applicationLifeCycle_t applicationLifeCycle, frameBuffer_t frameBuffer)
 {
     window_t this = malloc(sizeof *this);
 
@@ -18,6 +19,7 @@ window_t Window_New(applicationLifeCycle_t applicationLifeCycle)
 
     this->systemWindow = NULL;
 	this->applicationLifeCycle = applicationLifeCycle;
+	this->frameBuffer = frameBuffer;
 
     return this;
 }
@@ -27,19 +29,46 @@ void Window_Destroy(window_t this)
     free(this);
 }
 
+static void Window_Paint(window_t this, HWND window)
+{
+	PAINTSTRUCT paintStruct;
+	HDC destinationDeviceContext = BeginPaint(window, &paintStruct);
+	FrameBuffer_Paint(this->frameBuffer, destinationDeviceContext, paintStruct);
+	EndPaint(window, &paintStruct);
+}
+
 static LRESULT CALLBACK WindowProcess(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	window_t test = GetWindowLongPtrA(window, GWLP_USERDATA);
+	window_t this;
+
+	if (message == WM_CREATE)
+	{
+		CREATESTRUCT* createStruct = (CREATESTRUCT*)lParam;
+		this = (window_t)createStruct->lpCreateParams;
+		SetWindowLongPtrA(window, GWLP_USERDATA, this);
+	}
+	else
+	{
+		this = GetWindowLongPtrA(window, GWLP_USERDATA);
+	}
 
 	switch (message)
 	{
+		case WM_SIZE:
+			assert(this);
+			FrameBuffer_Resize(this->frameBuffer, LOWORD(lParam), HIWORD(lParam));
+			break;
+		case WM_PAINT:
+			assert(this);
+			Window_Paint(this, window);
+			break;
 		case WM_CLOSE:
 			DestroyWindow(window);
 			break;
 		case WM_DESTROY:
-			assert(test);
+			assert(this);
 			PostQuitMessage(0);
-			ApplicationLifeCycle_Stop(test->applicationLifeCycle, 0);
+			ApplicationLifeCycle_Stop(this->applicationLifeCycle, 0);
 			break;
 		default:
 			return DefWindowProc(window, message, wParam, lParam);
@@ -82,10 +111,8 @@ void Window_OnStart(window_t this)
         NULL,
         NULL,
         instance,
-        NULL
+        this
     );
-
-	SetWindowLongPtrA(this->systemWindow, GWLP_USERDATA, this);
 }
 
 void Window_Process(window_t this)
@@ -95,7 +122,7 @@ void Window_Process(window_t this)
     {
         DispatchMessage(&message);
     }
-
+	InvalidateRect(this->systemWindow, NULL, FALSE);
     UpdateWindow(this->systemWindow);
 }
 
