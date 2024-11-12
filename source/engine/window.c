@@ -29,14 +29,17 @@ void Window_Destroy(window_t this)
 
 static LRESULT CALLBACK WindowProcess(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	window_t test = GetWindowLongPtrA(window, GWLP_USERDATA);
+
 	switch (message)
 	{
 		case WM_CLOSE:
 			DestroyWindow(window);
 			break;
 		case WM_DESTROY:
-		case WM_QUIT:
-	        PostQuitMessage(0);
+			assert(test);
+			PostQuitMessage(0);
+			ApplicationLifeCycle_Stop(test->applicationLifeCycle, 0);
 			break;
 		default:
 			return DefWindowProc(window, message, wParam, lParam);
@@ -49,7 +52,7 @@ static LRESULT CALLBACK WindowProcess(HWND window, UINT message, WPARAM wParam, 
 void Window_OnStart(window_t this)
 {
     HBRUSH backgroundBrush = CreateSolidBrush(RGB(0, 0, 0));
-    WNDCLASSEX windowClass;
+	WNDCLASSEX windowClass = { 0 };
     HINSTANCE instance = GetModuleHandle(NULL);
 
     windowClass.cbSize = sizeof(WNDCLASSEX);
@@ -81,6 +84,8 @@ void Window_OnStart(window_t this)
         instance,
         NULL
     );
+
+	SetWindowLongPtrA(this->systemWindow, GWLP_USERDATA, this);
 }
 
 void Window_Process(window_t this)
@@ -88,11 +93,6 @@ void Window_Process(window_t this)
     MSG message = { 0 };
     while (PeekMessage(&message, this->systemWindow, 0, 0, PM_REMOVE))
     {
-		if (message.message == WM_QUIT || message.message == WM_DESTROY)
-		{
-			ApplicationLifeCycle_Stop(this->applicationLifeCycle, message.wParam);
-		}
-
         DispatchMessage(&message);
     }
 
